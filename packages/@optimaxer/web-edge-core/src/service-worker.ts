@@ -14,6 +14,7 @@ class LLMServiceWorker {
     self.addEventListener('install', this.onInstall.bind(this));
     self.addEventListener('fetch', this.onFetch.bind(this));
     self.addEventListener('activate', this.onActivate.bind(this));
+    self.addEventListener('message', this.onMessage.bind(this)); // Handle messages from the client
   }
 
   // Handles the 'install' event, which is fired when the service worker is first installed
@@ -88,7 +89,39 @@ class LLMServiceWorker {
       )
     );
   }
+  // Handles messages from the client
+  onMessage(event:any) {
+    console.log('Received message:', event.data);
+    const { action, data } = event.data;
+
+    if (action === 'doWork') {
+      // Perform the desired work here
+      console.log('Doing work with data:', data);
+      // Example: Fetch a resource or perform some computation
+
+      
+      fetch('/some-endpoint', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Work result:', result);
+        // Optionally, send a response back to the client
+        event.source.postMessage({ action: 'workCompleted', result });
+      })
+      .catch(error => {
+        console.error('Work failed:', error);
+        // Optionally, send an error message back to the client
+        event.source.postMessage({ action: 'workFailed', error });
+      });
+    }
+  }
 }
+
 
 // Create an instance of the service worker
 new LLMServiceWorker();

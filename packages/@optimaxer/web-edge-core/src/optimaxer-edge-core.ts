@@ -1,91 +1,134 @@
-// Define and export the Optimaxer class
-export class OptimaxerEdgeCore {
-    // Static method to load a model based on the provided model name
-    static async loadModel({ model }: { model: string }): Promise<any> {
-      // Factory method to load different models based on the name
-      switch (model) {
-        case 'gemma-2b':
-          return this.loadGemma2B();
-        case 'nova-1a':
-          return this.loadNova1A();
-        default:
-          // If the model name is not recognized, default to loading 'gemma-2b'
-          return this.loadGemma2B();
+import * as webllm from "@mlc-ai/web-llm";
+
+// The import.meta.url provides the URL of the current module
+// @ts-ignore
+const importMetaUrl = import.meta.url;
+
+class LLMTaskExecutor {
+  private engine: webllm.ServiceWorkerMLCEngine | null = null;
+
+  constructor() {
+    // Automatically register the service worker when the class is instantiated
+    this.registerServiceWorker();
+  }
+
+  // Registers the service worker to handle background tasks
+  private async registerServiceWorker() {
+    if ("serviceWorker" in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('./sw.js', {
+          scope: './',
+        });
+        if (registration.installing) {
+          console.log("Service worker installing");
+        } else if (registration.waiting) {
+          console.log("Service worker installed");
+        } else if (registration.active) {
+          console.log("Service worker active");
+        }
+      } catch (error) {
+        console.error(`Registration failed with ${error}`);
       }
     }
+  }
 
-    // Function to register the service worker
-  public static registerServiceWorker = async () => {
-  // Check if the browser supports service workers
-  if ('serviceWorker' in navigator) {
-    try {
-      // Attempt to register the service worker located at './service-worker.js' with a scope of './'
-      const registration = await navigator.serviceWorker.register('./service-worker.js', {
-        scope: './',
-      });
+  // Helper function to update the text of a label element
+  private setLabel(id: string, text: string) {
+    const label = document.getElementById(id);
+    if (label == null) {
+      throw Error("Cannot find label " + id);
+    }
+    label.innerText = text;
+  }
 
-      // Check the state of the service worker registration
-      if (registration.installing) {
-        console.log('Service worker installing'); // Service worker is in the process of being installed
-      } else if (registration.waiting) {
-        console.log('Service worker installed'); // Service worker has been installed but is waiting to activate
-      } else if (registration.active) {
-        console.log('Service worker active'); // Service worker is active and controlling the pages
-        this.sendMessageToServiceWorker({ action: 'doWork', data: { /* some data */ } });
-      } else {
-        console.log("Unknown state during service worker registration"); // Catch any unexpected states
+  // Initializes the MLCEngine with the selected model and a progress callback
+  public async initializeEngine(selectedModel: string, initProgressCallback: (report: webllm.InitProgressReport) => void) {
+    this.engine = await webllm.CreateServiceWorkerMLCEngine(selectedModel, {
+      initProgressCallback: initProgressCallback,
+    });
+  }
+
+  // Executes a non-streaming task, waits for the full response
+  public async mainNonStreaming() {
+    if (!this.engine) {
+      throw Error("Engine not initialized. Call initializeEngine first.");
+    }
+
+    const request: webllm.ChatCompletionRequest = {
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful, respectful and honest assistant. " +
+            "Be as happy as you can when speaking please. ",
+        },
+        { role: "user", content: "Provide me three US states." },
+        { role: "assistant", content: "California, New York, Pennsylvania." },
+        { role: "user", content: "Two more please!" },
+      ],
+      n: 3,
+      temperature: 1.5,
+      max_tokens: 256,
+    };
+
+    const reply0 = await this.engine.chat.completions.create(request);
+    console.log(reply0);
+    this.setLabel("generate-label", reply0.choices[0].message.content || "");
+
+    console.log(reply0.usage);
+  }
+
+  // Executes a streaming task, processes response chunks as they arrive
+  public async mainStreaming() {
+    if (!this.engine) {
+        throw Error("Engine not initialized. Call initializeEngine first.");
+    }
+
+    const request: webllm.ChatCompletionRequest = {
+      stream: true,
+      stream_options: { include_usage: true },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful, respectful and honest assistant. " +
+            "Be as happy as you can when speaking please. ",
+        },
+        { role: "user", content: "Provide me three US states." },
+        { role: "assistant", content: "California, New York, Pennsylvania." },
+        { role: "user", content: "Two more please!" },
+      ],
+      temperature: 1.5,
+      max_tokens: 256,
+    };
+
+    const asyncChunkGenerator = await this.engine.chat.completions.create(request);
+    let message = "";
+    for await (const chunk of asyncChunkGenerator) {
+      console.log(chunk);
+      message += chunk.choices[0]?.delta?.content || "";
+      this.setLabel("generate-label", message);
+      if (chunk.usage) {
+        console.log(chunk.usage); // only last chunk has usage
       }
-    } catch (error) {
-      // Log any errors that occur during the registration process
-      console.error(`Service worker registration failed with ${error}`);
+      // Uncomment the next line to enable interruption
+      // this.engine.interruptGenerate();  // works with interrupt as well
     }
+    console.log("Final message:\n", await this.engine.getMessage()); // the concatenated message
   }
-};
+}
 
-static sendMessageToServiceWorker = (message:any) => {
-  if (navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage(message);
-  } else {
-    console.error('No active service worker to send the message to.');
+// Export the class for use in other modules
+export default LLMTaskExecutor;
+
+// Example usage of the class
+const llmTaskExecutor = new LLMTaskExecutor();
+llmTaskExecutor.initializeEngine("Llama-3-8B-Instruct-q4f32_1-MLC", (report: webllm.InitProgressReport) => {
+  const initLabel = document.getElementById("init-label");
+  if (initLabel) {
+    initLabel.innerText = report.text;
   }
-};
-  
-    // Static method to load the 'gemma-2b' model
-    static async loadGemma2B(): Promise<any> {
-      // Simulating model loading process with a delay
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Define the loaded model with a name and a predict function
-          const loadedModel = {
-            name: 'gemma-2b',
-            predict: async (inputData: any) => {
-              // Simulate prediction logic for gemma-2b
-              return { result: 'Gemma-2B Prediction based on ' + JSON.stringify(inputData) };
-            },
-          };
-          // Resolve the promise with the loaded model
-          resolve(loadedModel);
-        }, 1000); // Simulate a 1 second delay for loading the model
-      });
-    }
-  
-    // Static method to load the 'nova-1a' model
-    static async loadNova1A(): Promise<any> {
-      // Simulating model loading process with a delay
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Define the loaded model with a name and a predict function
-          const loadedModel = {
-            name: 'nova-1a',
-            predict: async (inputData: any) => {
-              // Simulate prediction logic for nova-1a
-              return { result: 'Nova-1A Prediction based on ' + JSON.stringify(inputData) };
-            },
-          };
-          // Resolve the promise with the loaded model
-          resolve(loadedModel);
-        }, 1000); // Simulate a 1 second delay for loading the model
-      });
-    }
-  }
-  
+});
+// Uncomment one of the following lines to run a specific method
+// llmTaskExecutor.mainNonStreaming();
+// llmTaskExecutor.mainStreaming();

@@ -10,7 +10,6 @@ const FILES_TO_CACHE = [
 // Define a service worker class to handle installation, fetch, and activation events
 class LLMServiceWorker {
   constructor() {
-    // Bind the class methods to the service worker events
     self.addEventListener('install', this.onInstall.bind(this));
     self.addEventListener('fetch', this.onFetch.bind(this));
     self.addEventListener('activate', this.onActivate.bind(this));
@@ -18,13 +17,11 @@ class LLMServiceWorker {
   }
 
   // Handles the 'install' event, which is fired when the service worker is first installed
-  private onInstall(event: any): void {
+  onInstall(event: any): void {
     console.log('Service Worker installing...');
-    // Wait until all the files are cached
     event.waitUntil(
       caches.open(CACHE_NAME).then(cache => {
         console.log('Opened cache');
-        // Add all the specified files to the cache
         return cache.addAll(FILES_TO_CACHE).then(() => {
           console.log('All files cached');
         }).catch(error => {
@@ -37,25 +34,21 @@ class LLMServiceWorker {
   }
 
   // Handles the 'fetch' event, which is fired whenever a network request is made
-  private onFetch(event: any): void {
+  onFetch(event: any): void {
     console.log("Fetching:", event.request.url);
 
-    // Only handle requests with supported schemes (http and https)
     if (event.request.url.startsWith('http') || event.request.url.startsWith('https')) {
       event.respondWith(
-        // Check if the requested resource is in the cache
         caches.match(event.request).then(response => {
           if (response) {
             console.log("Serving from cache:", event.request.url);
-            return response; // Serve the resource from the cache
+            return response;
           }
           console.log("Fetching from network:", event.request.url);
-          // Fetch the resource from the network
           return fetch(event.request).then(networkResponse => {
-            // Cache the fetched resource
             return caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, networkResponse.clone());
-              return networkResponse; // Return the network response
+              return networkResponse;
             });
           }).catch(error => {
             console.error('Fetch failed:', error);
@@ -72,14 +65,13 @@ class LLMServiceWorker {
   }
 
   // Handles the 'activate' event, which is fired when the service worker becomes active
-  private onActivate(event: any): void {
+  onActivate(event: any): void {
     console.log('Service Worker activating...');
-    const cacheWhitelist = [CACHE_NAME]; // List of caches to keep
+    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
       caches.keys().then(keyList =>
         Promise.all(
           keyList.map(key => {
-            // Delete any caches that are not in the whitelist
             if (!cacheWhitelist.includes(key)) {
               console.log('Deleting old cache:', key);
               return caches.delete(key);
@@ -89,39 +81,68 @@ class LLMServiceWorker {
       )
     );
   }
+
   // Handles messages from the client
-  onMessage(event:any) {
+  async onMessage(event: any) {
     console.log('Received message:', event.data);
-    const { action, data } = event.data;
+    const { action, prompt, languageModel } = event.data;
 
-    if (action === 'doWork') {
-      // Perform the desired work here
-      console.log('Doing work with data:', data);
-      // Example: Fetch a resource or perform some computation
-
-      
-      fetch('/some-endpoint', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response.json())
-      .then(result => {
-        console.log('Work result:', result);
-        // Optionally, send a response back to the client
-        event.source.postMessage({ action: 'workCompleted', result });
-      })
-      .catch(error => {
-        console.error('Work failed:', error);
-        // Optionally, send an error message back to the client
-        event.source.postMessage({ action: 'workFailed', error });
-      });
+    if (action === 'executeCommand') {
+      try {
+        const result = await this.executeCommand(prompt, languageModel);
+        event.ports[0].postMessage({ result });
+      } catch (error) {
+        event.ports[0].postMessage({ error });
+      }
     }
   }
-}
 
+  // Execute the command using the specified language model
+  private async executeCommand(prompt: string, languageModel: string): Promise<any> {
+    let model;
+    switch (languageModel) {
+      case 'gemma-2b':
+        model = await this.loadGemma2B();
+        break;
+      case 'nova-1a':
+        model = await this.loadNova1A();
+        break;
+      default:
+        model = await this.loadGemma2B();
+    }
+    return model.predict(prompt);
+  }
+
+  // Load the 'gemma-2b' model
+  private async loadGemma2B(): Promise<any> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const loadedModel = {
+          name: 'gemma-2b',
+          predict: async (inputData: any) => {
+            return { result: 'Gemma-2B Prediction based on ' + JSON.stringify(inputData) };
+          },
+        };
+        resolve(loadedModel);
+      }, 1000);
+    });
+  }
+
+  // Load the 'nova-1a' model
+  private async loadNova1A(): Promise<any> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const loadedModel = {
+          name: 'nova-1a',
+          predict: async (inputData: any) => {
+            return { result: 'Nova-1A Prediction based on ' + JSON.stringify(inputData) };
+          },
+        };
+        resolve(loadedModel);
+      }, 1000);
+    });
+  }
+}
 
 // Create an instance of the service worker
 new LLMServiceWorker();

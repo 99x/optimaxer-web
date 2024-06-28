@@ -1,6 +1,14 @@
 // Exporting the Optimaxer class from optimaxer.js
-export { OptimaxerEdgeCore } from './optimaxer-edge-core';
-import { OptimaxerEdgeCore } from './optimaxer-edge-core';
-// Function to send a message to the service worker
-// Call the function to register the service worker
-OptimaxerEdgeCore.registerServiceWorker();
+import LLMTaskExecutor from './optimaxer-edge-core';
+import * as webllm from "@mlc-ai/web-llm";
+
+const llmTaskExecutor = new LLMTaskExecutor();
+llmTaskExecutor.initializeEngine("Llama-3-8B-Instruct-q4f32_1-MLC", (report: webllm.InitProgressReport) => {
+  const initLabel = document.getElementById("init-label");
+  if (initLabel) {
+    initLabel.innerText = report.text;
+  }
+});
+// Uncomment one of the following lines to run a specific method
+// llmTaskExecutor.mainNonStreaming();
+// llmTaskExecutor.mainStreaming();

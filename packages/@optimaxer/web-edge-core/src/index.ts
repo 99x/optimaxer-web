@@ -1,14 +1,40 @@
-// Exporting the Optimaxer class from optimaxer.js
-import LLMTaskExecutor from './optimaxer-edge-core';
+import Optimaxer from "./optimaxer/web-edge-core";
+import { Message, TaskConfiguration, Example } from './optimaxer/types';
 import * as webllm from "@mlc-ai/web-llm";
 
-const llmTaskExecutor = new LLMTaskExecutor();
-llmTaskExecutor.initializeEngine("Llama-3-8B-Instruct-q4f32_1-MLC", (report: webllm.InitProgressReport) => {
+// Create an instance of the Optimaxer class
+const llmTaskExecutor = new Optimaxer();
+
+// Load the specified model and handle the initialization progress report
+llmTaskExecutor.loadModel("Llama-3-8B-Instruct-q4f32_1-MLC", (report: webllm.InitProgressReport) => {
   const initLabel = document.getElementById("init-label");
   if (initLabel) {
     initLabel.innerText = report.text;
   }
 });
-// Uncomment one of the following lines to run a specific method
-// llmTaskExecutor.mainNonStreaming();
-// llmTaskExecutor.mainStreaming();
+
+// Define a task configuration using the TaskConfiguration interface
+const taskConfig: TaskConfiguration = {
+  systemMessage: {
+    role: "system",
+    content: "You are a helpful, respectful and honest assistant. " +
+             "Be as happy as you can when speaking please.",
+  },
+  userPrompt: "Translate the following text to French: 'Hello, how are you?'",
+  examples: [
+    {
+      user: "Translate the following text to French: 'Good morning'",
+      assistant: "Bonjour",
+    },
+    {
+      user: "Translate the following text to French: 'How are you?'",
+      assistant: "Comment ça va?",
+    }
+  ],
+  n: 1,
+  temperature: 1.5,
+  maxTokens: 256,
+};
+
+// Execute the task using the configured task configuration
+llmTaskExecutor.executeOptimaxerTask(taskConfig);

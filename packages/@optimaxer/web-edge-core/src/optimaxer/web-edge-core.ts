@@ -1,4 +1,4 @@
-import TaskFactory from './taskFactory';
+import TaskFactory from './task-factory';
 import { TaskConfiguration } from './types';
 import * as webllm from "@mlc-ai/web-llm";
 
@@ -14,7 +14,7 @@ class Optimaxer {
   private async registerServiceWorker() {
     if ("serviceWorker" in navigator) {
       try {
-        const registration = await navigator.serviceWorker.register('./sw.js', {
+        const registration = await navigator.serviceWorker.register('./service-worker.js', {
           scope: './',
         });
         if (registration.installing) {

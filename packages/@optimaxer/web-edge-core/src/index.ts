@@ -3,10 +3,10 @@ import { Message, TaskConfiguration, Example } from './optimaxer/types';
 import * as webllm from "@mlc-ai/web-llm";
 
 // Create an instance of the Optimaxer class
-const llmTaskExecutor = new Optimaxer();
+const optimaxerTaskExecutor = new Optimaxer();
 
 // Load the specified model and handle the initialization progress report
-llmTaskExecutor.loadModel("Llama-3-8B-Instruct-q4f32_1-MLC", (report: webllm.InitProgressReport) => {
+optimaxerTaskExecutor.loadModel("Llama-3-8B-Instruct-q4f32_1-MLC", (report: webllm.InitProgressReport) => {
   const initLabel = document.getElementById("init-label");
   if (initLabel) {
     initLabel.innerText = report.text;
@@ -37,4 +37,4 @@ const taskConfig: TaskConfiguration = {
 };
 
 // Execute the task using the configured task configuration
-llmTaskExecutor.executeOptimaxerTask(taskConfig);
+optimaxerTaskExecutor.executeOptimaxerTask(taskConfig);

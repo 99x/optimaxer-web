@@ -41,10 +41,10 @@ interface EntityConfig {
     actions: string[];
     routes: {
         lookup: (query: string, action: string) => string;
-        [action: string]: (...args: any[]) => string;
+        [action: string]: (...args: string[]) => string;
     };
     validations?: {
-        [action: string]: (query: string) => boolean;
+        [action: string]: (...args: string[]) => boolean;
     };
     defaultAction?: string;
 }
@@ -66,8 +66,10 @@ let configuration: EntityConfig[] = [
         },
         defaultAction: 'view',
         validations: {
-            isValidId: (id) => !isNaN(Number(id)), 
-            isValidQuery: (query) => query.length > 0,
+            edit: (id) => !isNaN(Number(id)), 
+            delete: (id) => !isNaN(Number(id)), 
+            view: (id) => !isNaN(Number(id)), 
+            lookup: (query, action) => query.length > 0,
         },
     },
     { 

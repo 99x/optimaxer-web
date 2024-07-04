@@ -2,14 +2,15 @@
   "name": "@optimaxer/web-commands",
   "version": "1.0.0",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "test": "jest"
   },
-  "dependencies": {
-    "@optimaxer99x/web-edge-core": "^1.0.0"
-  },
   "devDependencies": {
     "typescript": "^4.0.0"
+  },
+  "dependencies": {
+    "@optimaxer99x/web-edge-core": "^1.1.5"
   }
 }

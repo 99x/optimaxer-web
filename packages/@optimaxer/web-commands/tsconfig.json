@@ -2,8 +2,15 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
     "rootDir": "src",
-    "lib": ["ES2016", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "declaration": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ]
   },
   "include": ["src"]
 }

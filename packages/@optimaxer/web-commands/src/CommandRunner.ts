@@ -1,42 +1,38 @@
-// src/CommandRunner.ts
-import { EntityConfig } from './EntityConfig';
+// Import the necessary modules and classes
+import { EntityConfig } from './EntityConfig'; // Importing EntityConfig class for configuring entities
+import { PipelineFactory  } from './PipelineFactory'; // Importing PipelineFactory class to create and manage the pipeline
+import { CommandIntentIdentification, CommandEntityExtraction, CommandTaskExecution } from './PipelineStep'; // Importing pipeline steps
 
+// Define the CommandRunner class which is responsible for running commands through a pipeline
 export class CommandRunner {
+    // Private property to store entity configurations
     private entities: EntityConfig[] = [];
 
+    // Method to configure the entities, accepts an array or a promise that resolves to an array of EntityConfig
     async configure(entities: EntityConfig[] | Promise<EntityConfig[]>): Promise<void> {
+        // Await the resolution of the promise if entities is a promise, otherwise directly assign
         this.entities = await entities;
     }
 
+    // Method to run a command through the pipeline
     async runCommand(command: string): Promise<any> {
-        const [entityName, action, ...args] = this.parseCommand(command);
-        const entity = this.entities.find(e => e.entity.toLowerCase() === entityName.toLowerCase());
+        // Instantiate the PipelineFactory to manage the pipeline steps
+        const pipelineFactory = new PipelineFactory();
 
-        if (!entity) {
-            throw new Error(`Entity "${entityName}" not found`);
-        }
+        // Add the CommandIntentIdentification step to the pipeline
+        pipelineFactory.addStep(new CommandIntentIdentification());
+        // Add the CommandEntityExtraction step to the pipeline
+        pipelineFactory.addStep(new CommandEntityExtraction());
+        // Add the CommandTaskExecution step to the pipeline
+        pipelineFactory.addStep(new CommandTaskExecution());
 
-        const actionKey = action || entity.defaultAction;
-        if (!actionKey ||!entity.actions.includes(actionKey)) {
-            throw new Error(`Action "${actionKey}" not supported for entity "${entityName}"`);
-        }
+        // Execute the pipeline with the provided command as input and get the final context
+        const context = await pipelineFactory.executePipeline(command);
 
-        if (entity.validations && entity.validations[actionKey] && !entity.validations[actionKey](args.join(' '))) {
-            throw new Error(`Validation failed for action "${actionKey}" with query "${args.join(' ')}"`);
-        }
+        // Log the final TaskContext to the console for debugging or informational purposes
+        console.log('Final TaskContext:', context);
 
-        const route = entity.routes.lookup(args.join(' '), actionKey);
-        return this.executeRoute(route);
-    }
-
-    private parseCommand(command: string): [string, string, string[]] {
-        const parts = command.match(/(\w+)\s+(view|delete|edit|new)?\s*(.*)/i);
-        if (!parts) throw new Error(`Invalid command format: "${command}"`);
-        return [parts[1], parts[2], parts[3].split(' ')];
-    }
-
-    private async executeRoute(route: string): Promise<any> {
-        // Logic to navigate to the route or perform the necessary operation
-        return `Executing route: ${route}`;
+        // Optionally, return the context or a specific result from the context
+        return context;
     }
 }

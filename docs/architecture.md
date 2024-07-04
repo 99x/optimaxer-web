@@ -16,7 +16,27 @@ graph LR;
     web-edge-core --> web-edge-text;
     web-edge-core --> web-edge-search;
     web-edge-core --> web-edge-help;
+    web-edge-commands --> web-edge-ui;
+    web-edge-translate --> web-edge-ui;
+    web-edge-rag --> web-edge-ui;
+    web-edge-english --> web-edge-ui;
+    web-edge-forms --> web-edge-ui;
+    web-edge-text --> web-edge-ui;
+    web-edge-search --> web-edge-ui;
+    web-edge-help --> web-edge-ui;
 ```
+
+### web-edge-ui
+
+The `web-edge-ui` library is a comprehensive UI component library that integrates seamlessly with AI-powered features. It provides a wide range of reusable components and utilities to build modern and intuitive user interfaces for web applications. Examples:
+
+AI Settings: The AI Settings component allows users to configure and customize the behavior of AI-powered features in the application. It provides a user-friendly interface to adjust settings such as language preferences, translation options, retrieval-augmented generation (RAG) settings, and more.
+
+AI Toolbar: The AI Toolbar component is a versatile toolbar that offers quick access to various AI-related functionalities. It includes buttons and dropdowns to perform actions like language detection, translation, grammar and spelling checks, form processing, and text analysis. The toolbar can be easily customized to fit the application's design and requirements.
+
+Required Dialogs: The library also includes a set of pre-designed dialogs that are essential for AI-powered interactions. These dialogs cover scenarios such as displaying translation results, showing grammar and spelling suggestions, confirming form submissions, providing feedback on text inputs, and offering contextual help based on user actions. These dialogs are highly customizable and can be easily integrated into the application's workflow.
+
+With the `web-edge-ui` library, developers can leverage the power of AI in their web applications while maintaining a consistent and user-friendly interface. The reusable components and utilities provided by the library simplify the development process and enable the creation of AI-enhanced user experiences.
 
 ### web-edge-core
 
@@ -25,9 +45,20 @@ Handles core functionality such as loading models, running inference in web work
 ``` javascript
 import { Optimaxer } from 'optimaxer/web-edge-core';
 
-const model = await Optimaxer.loadModel({ model: 'gemma-2b' });
+// Mode 1: Local Lightweight LLM using WebGPU
+const model = await Optimaxer.loadModel({ model: 'gemma-2b', mode: 'edge' });
 
+// Mode 2: Backend API with Server-side LLM
+const model = await Optimaxer.loadModel({ model: 'gemma-7b', mode: 'server' });
 ```
+
+In the `web-edge-core` library, you can configure the system to operate in two modes. 
+
+In Mode 1, you can use a local lightweight Language Model (LLM) that is loaded onto the browser using WebGPU. This mode is suitable for scenarios where you want to perform inference locally without relying on a backend server.
+
+In Mode 2, you can set up the system to use a backend API that utilizes a Language Model (LLM) deployed on a server. This mode is useful when you want to offload the inference workload to a more powerful server.
+
+By providing these two modes of operation, the `web-edge-core` library offers flexibility in choosing the most suitable setup for your specific requirements.
 
 ### web-edge-commands
 
@@ -41,10 +72,10 @@ interface EntityConfig {
     actions: string[];
     routes: {
         lookup: (query: string, action: string) => string;
-        [action: string]: (...args: any[]) => string;
+        [action: string]: (...args: string[]) => string;
     };
     validations?: {
-        [action: string]: (query: string) => boolean;
+        [action: string]: (...args: string[]) => boolean;
     };
     defaultAction?: string;
 }
@@ -66,8 +97,10 @@ let configuration: EntityConfig[] = [
         },
         defaultAction: 'view',
         validations: {
-            isValidId: (id) => !isNaN(Number(id)), 
-            isValidQuery: (query) => query.length > 0,
+            edit: (id) => !isNaN(Number(id)), 
+            delete: (id) => !isNaN(Number(id)), 
+            view: (id) => !isNaN(Number(id)), 
+            lookup: (query, action) => query.length > 0,
         },
     },
     { 

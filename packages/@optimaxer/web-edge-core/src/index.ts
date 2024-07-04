@@ -1,6 +1,16 @@
-import Optimaxer from "./optimaxer/web-edge-core";
-import { Message, TaskConfiguration, Example } from './optimaxer/types';
+import Optimaxer from "./web-edge-core";
+import { TaskConfiguration } from './types';
 import * as webllm from "@mlc-ai/web-llm";
+
+// Register the service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(function(registration) {
+      console.log('Service Worker registered with scope:', registration.scope);
+    }).catch(function(error) {
+      console.log('Service Worker registration failed:', error);
+    });
+}
 
 // Create an instance of the Optimaxer class
 const optimaxerTaskExecutor = new Optimaxer();

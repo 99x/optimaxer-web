@@ -2,8 +2,10 @@
   "name": "optimaxer-web",
   "private": true,
   "devDependencies": {
-    "lerna": "^4.0.0",
-    "typescript": "^4.0.0"
+    "lerna": "^8.1.5",
+    "typescript": "^5.5.3"
   },
-  "workspaces": ["packages/*"]
+  "workspaces": [
+    "packages/*"
+  ]
 }

@@ -6,7 +6,9 @@
     "build": "tsc",
     "test": "jest"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@optimaxer99x/web-edge-core": "^1.0.0"
+  },
   "devDependencies": {
     "typescript": "^4.0.0"
   }

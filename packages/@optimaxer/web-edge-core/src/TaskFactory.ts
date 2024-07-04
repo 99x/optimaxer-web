@@ -1,10 +1,6 @@
 import { Message, TaskConfiguration, Example } from './types';
 import * as webllm from "@mlc-ai/web-llm";
 
-// The import.meta.url provides the URL of the current module
-// @ts-ignore
-const importMetaUrl = import.meta.url;
-
 class TaskFactory {
   /**
    * Converts examples of user-assistant interactions into messages for the chat request.
@@ -29,7 +25,7 @@ class TaskFactory {
    * @param config - The task configuration to generate the chat completion request.
    * @returns The chat completion request in the format required by the API.
    */
-  createChatCompletionRequest(config: TaskConfiguration): webllm.ChatCompletionRequestNonStreaming {
+  public createChatCompletionRequest(config: TaskConfiguration): webllm.ChatCompletionRequestNonStreaming {
     let messages: Message[] = [
       config.systemMessage,
       {
@@ -55,12 +51,11 @@ class TaskFactory {
 
     return {
       messages: messages,
-      n: config.n, // Number of completions to generate
-      temperature: config.temperature, // Controls the randomness of the generated responses
-      max_tokens: config.maxTokens, // The maximum number of tokens to generate in the response
+      n: config.n,
+      temperature: config.temperature,
+      max_tokens: config.maxTokens,
     };
   }
 }
 
-// Export TaskFactory for use in other modules
 export default TaskFactory;

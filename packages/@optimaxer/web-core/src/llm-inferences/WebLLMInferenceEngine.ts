@@ -1,7 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
 
 import { ChatCompletionMessageParam, CreateMLCEngine, MLCEngine  } from "@mlc-ai/web-llm";
 import { AbstractLLMInferenceEngine } from "./AbstractLLMInferenceEngine";

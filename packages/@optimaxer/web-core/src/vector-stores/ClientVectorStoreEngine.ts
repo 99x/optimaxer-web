@@ -1,9 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
-
-
 import { getEmbedding, EmbeddingIndex, SearchResult } from 'client-vector-search';
 import { AbstractVectorStoreEngine } from './AbstractVectorStoreEngine';
 import { VectorDocument } from '../types/VectorDocument';

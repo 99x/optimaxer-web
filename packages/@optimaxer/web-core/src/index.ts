@@ -1,7 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
 
 // LLMs
 export { WebLLMInferenceEngine } from './llm-inferences/WebLLMInferenceEngine';

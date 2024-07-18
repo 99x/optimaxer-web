@@ -1,7 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
 
 import { AbstractLLMInferenceEngine } from "./AbstractLLMInferenceEngine";
 import { AvailableModels } from "../types/AvailableModels";

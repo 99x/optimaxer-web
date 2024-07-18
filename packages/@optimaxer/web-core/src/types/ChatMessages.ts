@@ -1,7 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-*/
 
 /**
  * ChatMessage class is the base class for all chat messages.

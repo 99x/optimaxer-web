@@ -1,7 +1,4 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
+
 
 import { AbstractVectorStoreEngine } from "./AbstractVectorStoreEngine";
 import { Voy, Resource } from "voy-search";

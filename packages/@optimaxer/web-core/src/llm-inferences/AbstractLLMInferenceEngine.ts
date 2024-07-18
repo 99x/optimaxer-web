@@ -1,8 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
-
 import { AvailableModels } from "../types/AvailableModels";
 import { ChatMessage } from "../types/ChatMessages";
 

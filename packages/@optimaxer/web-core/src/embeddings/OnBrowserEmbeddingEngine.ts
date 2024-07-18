@@ -1,8 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
-
 import { pipeline, Tensor, env } from '@xenova/transformers';
 import { AbstractEmbedderEngine } from './AbstractEmbedderEngine';
 import { Document } from '../types/Document';

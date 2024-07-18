@@ -1,7 +1,4 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
+
 
 export class Response {
     public status:number;

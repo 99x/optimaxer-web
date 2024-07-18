@@ -1,8 +1,3 @@
-/**
- * Author: Srilal S. Siriwardhane
- * Email: SrilalS@99x.io
-**/
-
 import { AbstractEmbedderEngine } from "./AbstractEmbedderEngine";
 import { AvailableModels } from "../types/AvailableModels";
 import { Document } from "../types/Document";

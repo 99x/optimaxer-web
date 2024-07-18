@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true, // set to true on prod
+    "sourceMap": true, // set to true on dev
+    "strict": true,
+    "types": ["node"],
+  },
+  "include": ["src/**/*"]
+}

@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Order",
+        "id": 1,
+        "actions": {
+            "new": { "endpoint": "", "params": {}, "functionName": "createNewOrder" },
+            "edit": { "endpoint": "order/edit/${order_id}", "params": { "order_id": "Extract the id of the order" } },
+            "delete": { "endpoint": "order/delete/${order_id}", "params": { "order_id": "Extract the id of the order" }, "functionName": "deleteOrder" },
+            "view": { "endpoint": "order/view/${order_id}", "params": { "order_id": "Extract the id of the order" } }
+        },
+        "defaultAction": "view"
+    },
+    {
+        "name": "News",
+        "id": 2,
+        "actions": {
+            "new": { "endpoint": "news/new", "params": {} },
+            "view": { "endpoint": "news/view", "params": {} },
+            "filter": { "endpoint": "news/view/${news_channel}/${news_category}", "params": { "news_channel": "Extract the news channel", "news_category": "Extract the category of the news" }, "functionName":"filterNews" }
+        },
+        "defaultAction": "view",
+        "validations": {
+            "isValidChannel": "function news_channel { return news_channel.length > 0; }",
+            "isValidCategory": "function news_category { return news_category.length > 0; }"
+        }
+    },
+    {
+        "name": "Task",
+        "id": 3,
+        "actions": {
+            "new": { "endpoint": "task/new", "params": {}, "callback": "function() {}" },
+            "edit": { "endpoint": "task/edit/${task_id}", "params": { "task_id": "Extract the id of the task" } },
+            "delete": { "endpoint": "task/delete/${task_id}", "params": { "task_id": "Extract the id of the task" } },
+            "view": { "endpoint": "task/view/${task_id}", "params": { "task_id": "Extract the id of the task" } }
+        },
+        "defaultAction": "view"
+    }
+]

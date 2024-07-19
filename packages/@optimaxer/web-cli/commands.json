@@ -1,0 +1,68 @@
+[
+  {
+    "content": "Create a new order",
+    "metadata": {
+      "id": 1
+    }
+  },
+  {
+    "content": "Edit the existing order",
+    "metadata": {
+      "id": 1
+    }
+  },
+  {
+    "content": "Delete the current order",
+    "metadata": {
+      "id": 1
+    }
+  },
+  {
+    "content": "Show me the details of the order",
+    "metadata": {
+      "id": 1
+    }
+  },
+  {
+    "content": "Publish a new news article",
+    "metadata": {
+      "id": 2
+    }
+  },
+  {
+    "content": "Display the news article",
+    "metadata": {
+      "id": 2
+    }
+  },
+  {
+    "content": "Apply filters to the news articles",
+    "metadata": {
+      "id": 2
+    }
+  },
+  {
+    "content": "Add a new task to my list",
+    "metadata": {
+      "id": 3
+    }
+  },
+  {
+    "content": "Update the task details",
+    "metadata": {
+      "id": 3
+    }
+  },
+  {
+    "content": "Remove the task from my list",
+    "metadata": {
+      "id": 3
+    }
+  },
+  {
+    "content": "View the task information",
+    "metadata": {
+      "id": 3
+    }
+  }
+]

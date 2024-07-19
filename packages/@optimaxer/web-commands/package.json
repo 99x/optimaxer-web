@@ -1,16 +1,24 @@
 {
   "name": "@optimaxer/web-commands",
-  "version": "1.0.0",
-  "main": "lib/index.js",
+  "version": "1.0.2",
+  "author": {
+    "name": "99x Technologies",
+    "email": "hello@99x.io",
+    "url": "https://99x.io"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "test": "jest"
   },
-  "devDependencies": {
-    "typescript": "^4.0.0"
-  },
   "dependencies": {
-    "@optimaxer99x/web-edge-core": "^1.1.5"
+    "@optimaxer/web-core": "0.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
   }
 }

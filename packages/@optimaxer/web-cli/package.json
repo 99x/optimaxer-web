@@ -1,0 +1,30 @@
+{
+  "name": "optimaxer-cli",
+  "version": "0.0.6",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "optimaxer-cli": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "link": "tsc && npm link"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "openai": "^4.52.7",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/commander": "^2.12.2",
+    "@types/node": "^20.14.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}

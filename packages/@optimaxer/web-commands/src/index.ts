@@ -1,15 +1,8 @@
-// index.ts
-import { CommandRunner } from './CommandRunner';
-import { configuration } from './Configuration';
+/**
+ * Author: Charuka Rathnayaka
+ * Email: CharukaR@99x.io
+**/
 
-import * as webllm from "@mlc-ai/web-llm";
-const runner = new CommandRunner();
-runner.configure(configuration);
 
-runner.runCommand('show me Order 1234')
-    .then((result: string) => {
-        console.log(result);
-    })
-    .catch((error: Error) => {
-        console.error(error);
-    });
+// Command Pipline for command execution
+export {CommandPipeline} from './pipelines/CommandPipeline';

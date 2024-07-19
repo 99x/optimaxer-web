@@ -1,0 +1,62 @@
+[
+  {
+    "content": "new",
+    "metadata": {
+      "name": "new"
+    }
+  },
+  {
+    "content": "edit",
+    "metadata": {
+      "name": "edit"
+    }
+  },
+  {
+    "content": "delete",
+    "metadata": {
+      "name": "delete"
+    }
+  },
+  {
+    "content": "view",
+    "metadata": {
+      "name": "view"
+    }
+  },
+  {
+    "content": "filter",
+    "metadata": {
+      "name": "filter"
+    }
+  },
+  {
+    "content": "create",
+    "metadata": {
+      "name": "new"
+    }
+  },
+  {
+    "content": "modify",
+    "metadata": {
+      "name": "edit"
+    }
+  },
+  {
+    "content": "remove",
+    "metadata": {
+      "name": "delete"
+    }
+  },
+  {
+    "content": "show",
+    "metadata": {
+      "name": "view"
+    }
+  },
+  {
+    "content": "sort",
+    "metadata": {
+      "name": "filter"
+    }
+  }
+]

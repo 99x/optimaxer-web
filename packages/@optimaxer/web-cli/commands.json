@@ -12,7 +12,7 @@
     }
   },
   {
-    "content": "Delete the current order",
+    "content": "Delete this order",
     "metadata": {
       "id": 1
     }
@@ -42,7 +42,7 @@
     }
   },
   {
-    "content": "Add a new task to my list",
+    "content": "Add a new task",
     "metadata": {
       "id": 3
     }
@@ -54,7 +54,7 @@
     }
   },
   {
-    "content": "Remove the task from my list",
+    "content": "Remove the task from the list",
     "metadata": {
       "id": 3
     }

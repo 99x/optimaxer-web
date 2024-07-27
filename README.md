@@ -18,6 +18,11 @@ This monorepo contains a collection of projects for various functionalities with
 
 Read more about the [features](./docs/features.md) and [architecture](./docs/architecture.md) of this project.
 
+## Creating a simple application 
+
+(./packages/@optimaxer/web-cli/docs/getting%20started.md)
+
+
 ## Getting Started
 
 ### Prerequisites

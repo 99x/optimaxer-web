@@ -7,10 +7,11 @@ import { CommandFactory } from "../factories/CommandFactory";
 import { Document, Response } from '@optimaxer/web-core';
 import { Entity } from "../types/Entity";
 import { Action } from "../types/Action";
-import { WebLLMModel } from "../types/WebLLMModel";
+import { WebLLMModel } from "../types/LLMModel";
 import { Utility } from "../utils/Utility";
 import { Pipeline } from "./Pipeline";
 import { CommandResponse } from "../types/CommandResponse";
+import { LLMEngine } from "../types/InferenceEngines";
 
 export class CommandPipeline extends Pipeline {
     commandVecStoreName: string = 'commandDB';
@@ -52,15 +53,15 @@ export class CommandPipeline extends Pipeline {
      * the command. It returns a CommandResponse indicating the result of the execution.
      * 
     **/
-    protected async runPipeline(userCommand: string, entityConfig: any[], modelName: WebLLMModel = "gemma", functionRegistry: { [key: string]: (...args: any[]) => any }): Promise<CommandResponse> {
+    protected async runPipeline(userCommand: string, entityConfig: any[], modelName: WebLLMModel = "gemma", functionRegistry: { [key: string]: (...args: any[]) => any }, llmInferenceEngine: LLMEngine = "media-pipe"): Promise<CommandResponse> {
         console.time("pipeline");
         const entities: Entity[] = Utility.convertJsonToEntity(entityConfig);
-        const command = await CommandFactory.createCommand(modelName, userCommand);
+        const command = await CommandFactory.createCommand(userCommand);
         const entity: Entity = await command.getEntity(entities, this.vectorStore, this.commandVecStoreName);
         console.log("Relevant Entity: ", entity);
         const action: Action = await command.getAction(entity, this.vectorStore, this.actionVecStoreName);
         console.log("Action: ", action);
-        const extraction: { [key: string]: string } = await command.getExtraction(action, modelName);
+        const extraction: { [key: string]: string } = await command.getExtraction(action, modelName, llmInferenceEngine);
         console.log("Extraction: ", extraction);
         const execution: CommandResponse = await command.execute(entity, action, extraction, functionRegistry);
         console.timeEnd("pipeline");

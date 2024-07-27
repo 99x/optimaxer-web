@@ -1,3 +1,7 @@
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
 
 import { Response } from '../types/Response';
 import { Document } from '../types/Document';

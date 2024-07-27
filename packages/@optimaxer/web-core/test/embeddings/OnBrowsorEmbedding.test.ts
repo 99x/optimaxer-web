@@ -1,8 +1,11 @@
-
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
 
 import { Document } from '../../src/types/Document';
 import { VectorDocument } from '../../src/types/VectorDocument';
-import { OnBrowserEmbeddingEngine } from '../../src/embeddings/OnBrowserEmbeddingEngine';
+import { OnBrowserEmbedding } from '../../src/embeddings/OnBrowserEmbedding';
 
 import { expect, test } from 'vitest';
 
@@ -15,7 +18,7 @@ const documents: Document[] = [
 ];
 
 test("[ Browser/Node ] Run OnBrowserEmbedding", async ()=>{
-    const onBrowserEmbedding: OnBrowserEmbeddingEngine = new OnBrowserEmbeddingEngine('gte-small');
+    const onBrowserEmbedding: OnBrowserEmbedding = new OnBrowserEmbedding('gte-small');
     const vectorDocuments:VectorDocument[] = await onBrowserEmbedding.embedDocuments(documents);
     expect(vectorDocuments.length).toBe(5);
 });

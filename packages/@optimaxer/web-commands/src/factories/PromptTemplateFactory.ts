@@ -25,10 +25,16 @@ export class PromptTemplateFactory {
         // Select the appropriate prompt template based on the model name
         switch (modelName) {
             case 'gemma':
-                promptTemplate = new PhiModelPromptTemplate();
+                promptTemplate = new GemmaModelPromptTemplate();
+                break;
+            case 'gemma-cpu':
+                promptTemplate = new GemmaModelPromptTemplate();
+                break;
+            case 'gemma-gpu':
+                promptTemplate = new GemmaModelPromptTemplate();
                 break;
             case 'phi':
-                promptTemplate = new GemmaModelPromptTemplate();
+                promptTemplate = new PhiModelPromptTemplate();
                 break;
             // Add more cases to extend models
             default:

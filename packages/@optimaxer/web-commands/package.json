@@ -1,11 +1,6 @@
 {
   "name": "@optimaxer/web-commands",
-  "version": "1.0.2",
-  "author": {
-    "name": "99x Technologies",
-    "email": "hello@99x.io",
-    "url": "https://99x.io"
-  },
+  "version": "1.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -14,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@optimaxer/web-core": "0.0.5"
+    "@optimaxer/web-core": "1.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",

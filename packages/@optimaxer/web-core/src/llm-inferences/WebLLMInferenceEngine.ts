@@ -1,3 +1,7 @@
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
 
 import { ChatCompletionMessageParam, CreateMLCEngine, MLCEngine  } from "@mlc-ai/web-llm";
 import { AbstractLLMInferenceEngine } from "./AbstractLLMInferenceEngine";
@@ -5,24 +9,13 @@ import { AIChatMessage, ChatMessage } from "../types/ChatMessages";
 import { AvailableModels } from "../types/AvailableModels";
 import { Model, ModelInfo } from "../types/Model";
 import { EventEmitter } from 'eventemitter3';
+import { LLMStatus } from "../types/LLMStatus";
 
 /**
  * WebLLMModel type to represent the available models.
  * This type is extended by the `Model` Enum to enforce the model type.
  */
 type WebLLMModel = Model | 'phi' | 'gemma';
-
-/**
- * LLMStatus type to represent the status of the LLM Inference.
- * @param progress - The progress of the inference. in most models this will be a float.
- * @param text - The text of the inference.
- * @param timeElapsed - The time elapsed for the inference.
- */
-type LLMStatus = {
-    progress: number;
-    text: string;
-    timeElapsed: number;
-}
 
 /**
  * WebLLMInferenceEngine class to handle the LLM Inference using the Web-LLM.

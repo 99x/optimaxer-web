@@ -22,3 +22,10 @@ optimaxer-cli gen -cf <Config file> -tf <Training Factor> -oak <Open AI Key>
 `
 optimaxer-cli help gen
 `
+
+
+---
+sidebar_position: 0
+title: "1. Creating a Simple App"
+---
+

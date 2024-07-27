@@ -1,3 +1,8 @@
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
+
 import { AbstractEmbedderEngine } from "./AbstractEmbedderEngine";
 import { AvailableModels } from "../types/AvailableModels";
 import { Document } from "../types/Document";
@@ -17,7 +22,7 @@ export class RemoteEmbeddingEngine extends AbstractEmbedderEngine{
         this.embedderModel = model;
     }
 
-    embedTexts(texts: string[]): Promise<number[]> {
+    embedTexts(texts: string[]): Promise<number[][]> {
         throw new Error("Method not implemented.");
     }
     embedDocuments(documents: Document[]): Promise<VectorDocument[]> {

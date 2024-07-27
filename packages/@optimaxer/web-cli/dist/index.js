@@ -1,63 +1,38 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import chalk from 'chalk';
-import fs from 'fs';
-import ora from 'ora';
-import { transformCommandConfig, transformActionConfig, } from './config-utils.js';
-import { transformActions, transformCommands, } from './parser-utils.js';
-import { runLLM } from './openai-utils.js';
+import { GenCMD } from './gen-cmd/GenCMD.js';
+import { NewApp } from './new-app/NewApp.js';
+import { GenCon } from './gen-con/GenCon.js';
 const program = new Command();
-const log = console.log;
-async function getFileContent(filePath) {
-    const currentDirectory = process.cwd();
-    const cleanedFilePath = filePath.replace(/\\/g, '/');
-    const absoluteFilePath = `${currentDirectory}/${cleanedFilePath}`;
-    if (fs.existsSync(absoluteFilePath)) {
-        const data = fs.readFileSync(absoluteFilePath, 'utf8');
-        return JSON.parse(data);
-    }
-    else {
-        log(chalk.red(`ERROR: File "${filePath}" does not exist.`));
-        process.exit(1);
-    }
-}
+const version = '0.1.0';
 program
     .name('Optimaxer CLI')
-    .version('0.0.6')
+    .version(version)
     .description('Optimaxer CLI tool');
 program
-    .command('gen')
+    .command('gen-cmd')
     .description('Generate Commands.')
     .requiredOption('-oak <string>', 'OpenAI API Key')
     .requiredOption('-cf <string>', 'Config File (Default: config.json)')
     .requiredOption('-tf <number>', 'Training Factor Target')
     .action(async (options) => {
-    log(chalk.blueBright(`
-            ===| Optimaxer CLI |===
-                    V 0.0.6  
-        `));
-    const config = await getFileContent(options.Cf);
-    const trainingFactor = Number.parseInt(options.Tf);
-    const commandVars = {
-        "config_array": transformCommandConfig(config),
-        "training_factor": trainingFactor
-    };
-    const actionVars = {
-        "config_array": transformActionConfig(config),
-        "training_factor": trainingFactor
-    };
-    const commandSpinner = ora('Generating Commands...').start();
-    const commandGenResult = await runLLM(options.Oak, commandVars, 'command');
-    commandSpinner.succeed('Commands Generated.');
-    const actionSpinner = ora('Generating Actions...').start();
-    const actionGenResult = await runLLM(options.Oak, actionVars, 'action');
-    actionSpinner.succeed('Actions Generated.');
-    const jsonCommandResult = transformCommands(JSON.parse(commandGenResult));
-    const jsonActionResult = transformActions(JSON.parse(actionGenResult), transformActionConfig(config));
-    const saveSpinner = ora('Writing to files...').start();
-    const currentDirectory = process.cwd();
-    fs.writeFileSync(`${currentDirectory}/commands.json`, JSON.stringify(jsonCommandResult, null, 2));
-    fs.writeFileSync(`${currentDirectory}/actions.json`, JSON.stringify(jsonActionResult, null, 2));
-    saveSpinner.succeed('Files written successfully.');
+    const genCMD = new GenCMD();
+    await genCMD.run(options);
+});
+program
+    .command('new-app')
+    .description('Generate a Simple implementation of the Optimaxer SDK.')
+    .requiredOption('-n <string>', 'Project Name (Default: optimaxer-app)')
+    .action(async (options) => {
+    const newApp = new NewApp();
+    await newApp.run(options);
+});
+program
+    .command('gen-con')
+    .description('Generate Contents from a given URL.')
+    .requiredOption('-u <string>', 'URL')
+    .action(async (options) => {
+    const genCon = new GenCon();
+    await genCon.run(options);
 });
 program.parse();

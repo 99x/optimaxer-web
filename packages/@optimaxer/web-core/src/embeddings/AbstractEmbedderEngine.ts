@@ -1,3 +1,9 @@
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
+
+
 import { VectorDocument } from "../types/VectorDocument";
 import { Document } from "../types/Document";
 import { AvailableModels } from "../types/AvailableModels";
@@ -18,7 +24,7 @@ export abstract class AbstractEmbedderEngine {
      * @param texts string[]
      * @returns Promise<number[]>
      */
-    abstract embedTexts(texts: string[]): Promise<number[]>
+    abstract embedTexts(texts: string[]): Promise<number[][]>
 
     /**
      * embedDocuments

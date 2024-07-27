@@ -3,24 +3,20 @@
  * Email: CharukaR@99x.io
 **/
 
-import { ChatMessage, Document, HumanChatMessage, WebLLMInferenceEngine } from "@optimaxer/web-core";
+import { Document } from "@optimaxer/web-core";
 import { Entity } from "../types/Entity";
 import { ClientVectorStoreEngine } from "@optimaxer/web-core";
 import { Action } from "../types/Action";
-import { PromptTemplateFactory } from "../factories/PromptTemplateFactory";
-import { WebLLMModel } from "../types/WebLLMModel";
+import { WebLLMModel } from "../types/LLMModel";
 import { Utility } from "../utils/Utility";
 import { JsonKeyMapper } from "../utils/JsonKeyMapper";
 import { CommandResponse } from "../types/CommandResponse";
+import { InferenceFactory } from "../factories/InferenceFactory";
+import { LLMEngine } from "../types/InferenceEngines";
 
 
 export class Command {
     private command: string = "";
-    private webLLM: WebLLMInferenceEngine;
-
-    constructor(webLLMInstance: WebLLMInferenceEngine) {
-        this.webLLM = webLLMInstance;
-    }
 
     setUserCommand(userCommand: string) {
         this.command = userCommand;
@@ -70,17 +66,12 @@ export class Command {
      * This function performs data extraction using the language model based on the action parameters.
      * It returns a promise of the extracted data as an object.
      **/
-    async getExtraction(action: Action, modelName: WebLLMModel): Promise<{ [key: string]: string }> {
+    async getExtraction(action: Action, modelName: WebLLMModel, llmInferenceEngine: LLMEngine): Promise<{ [key: string]: string }> {
         if(Object.keys(action.params).length===0){
             return {}
         }
-        const params: Record<string, any> = { "outputFormat": action.params, "userCommand": this.command };
-        const formattedPrompt: string = PromptTemplateFactory.getFormattedPrompt(modelName, params);
-        const chatMsg: ChatMessage[] = [new HumanChatMessage(formattedPrompt)];
-        console.time("LLM_call");
-        const llmOutput: ChatMessage[] = await this.webLLM.runChatInference(chatMsg);
-        console.timeEnd("LLM_call");
-        const parsedLlmOutput: { [key: string]: string } = Utility.extractJsonFromLlmResponse(llmOutput[1].content);
+        const llmOutput: string = await InferenceFactory.generateInference(this.command, action, modelName, llmInferenceEngine)
+        const parsedLlmOutput: { [key: string]: string } = Utility.extractJsonFromLlmResponse(llmOutput);
         const mappedLlmOutput: { [key: string]: string } = JsonKeyMapper.mapKeysAndExtractValues(action.params, parsedLlmOutput);
         return mappedLlmOutput;
     }

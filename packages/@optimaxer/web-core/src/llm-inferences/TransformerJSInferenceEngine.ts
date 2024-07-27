@@ -1,28 +1,21 @@
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
 
 import { AbstractLLMInferenceEngine } from "./AbstractLLMInferenceEngine";
 import { AvailableModels } from "../types/AvailableModels";
 import { AIChatMessage, ChatMessage, HumanChatMessage, SystemChatMessage } from "../types/ChatMessages";
-import { env, pipeline, Message, TextGenerationOutput } from '@xenova/transformers';
+import { env, pipeline, Message, TextGenerationOutput, TextGenerationPipeline } from '@xenova/transformers';
 import { Model, ModelInfo } from "../types/Model";
 import { EventEmitter } from 'eventemitter3';
+import { LLMStatus } from "../types/LLMStatus";
 
 /**
  * TransformerJSModel
  * This type is extended by the `Model` Enum to enforce the model type.
  */
 type TransformerJSModel = Model | 'llama' | 'gemma' | 'tinyllama' | 'tinymistral';
-
-/**
- * LLMStatus type to represent the status of the LLM Inference.
- * @param progress - The progress of the inference. in most models this will be a float.
- * @param text - The text of the inference.
- * @param timeElapsed - The time elapsed for the inference.
- */
-type LLMStatus = {
-    progress: number;
-    text: string;
-    timeElapsed: number;
-}
 
 /**
  * TransformerJSInferenceEngine class to handle the LLM Inference using the TransformerJS.
@@ -33,23 +26,36 @@ export class TransformerJSInferenceEngine extends AbstractLLMInferenceEngine {
     private status: LLMStatus;
     private statusEmitter: EventEmitter;
     llmModel:TransformerJSModel;
+    engine!:TextGenerationPipeline;
 
-    
+
+    static async init(model:TransformerJSModel):Promise<TransformerJSInferenceEngine> {
+        const instance = new TransformerJSInferenceEngine(model);
+        await instance.createEngine();
+        return instance;
+    }
+
+    async createEngine() {
+        this.engine = await pipeline('text-generation', this.getModel(),{
+            progress_callback: this.progressCallback.bind(this)
+        });
+    }
+
     // Local Models
-    // availableModels: AvailableModels = {
-    //     'llama': new ModelInfo('onnx-Llama-160M-Chat-v1'),
-    //     'tinymistral': new ModelInfo('onnx-TinyMistral-248M-Chat-v2'),
-    //     'gemma':new ModelInfo('tiny-random-GemmaForCausalLM'),
-    //     'tinyllama': new ModelInfo('TinyLlama-1.1B-Chat-v1.0')
-    // };
+    availableModels: AvailableModels = {
+        'llama': new ModelInfo('onnx-Llama-160M-Chat-v1'),
+        'tinymistral': new ModelInfo('onnx-TinyMistral-248M-Chat-v2'),
+        'gemma':new ModelInfo('tiny-random-GemmaForCausalLM'),
+        'tinyllama': new ModelInfo('TinyLlama-1.1B-Chat-v1.0')
+    };
 
     // Remote Models
-    availableModels: AvailableModels = {
-        'llama': new ModelInfo('Felladrin/onnx-Llama-160M-Chat-v1'),
-        'gemma':new ModelInfo('Xenova/tiny-random-GemmaForCausalLM'),
-        'tinyllama': new ModelInfo('Xenova/TinyLlama-1.1B-Chat-v1.0'),
-        'tinymistral': new ModelInfo('Felladrin/onnx-TinyMistral-248M-Chat-v2')
-    };
+    // availableModels: AvailableModels = {
+    //     'llama': new ModelInfo('Felladrin/onnx-Llama-160M-Chat-v1'),
+    //     'gemma':new ModelInfo('Xenova/tiny-random-GemmaForCausalLM'),
+    //     'tinyllama': new ModelInfo('Xenova/TinyLlama-1.1B-Chat-v1.0'),
+    //     'tinymistral': new ModelInfo('Felladrin/onnx-TinyMistral-248M-Chat-v2')
+    // };
 
     /**
      * constructor
@@ -67,8 +73,8 @@ export class TransformerJSInferenceEngine extends AbstractLLMInferenceEngine {
         env.allowLocalModels = false;
         env.allowRemoteModels = true;
 
-        // env.remoteHost = "http://127.0.0.1:8000/models/";
-        // env.remotePathTemplate = "{model}";
+        env.remoteHost = "http://127.0.0.1:8000/models/";
+        env.remotePathTemplate = "{model}";
 
         this.llmModel = model;
         this.status = {
@@ -81,10 +87,6 @@ export class TransformerJSInferenceEngine extends AbstractLLMInferenceEngine {
     }
 
     async runChatInference(chat: ChatMessage[]): Promise<ChatMessage[]> {
-        
-        const pipe = await pipeline('text-generation', this.getModel(),{
-            progress_callback: this.progressCallback.bind(this)
-        });
 
         const messages:Message[] = chat.map((message:ChatMessage) => {
             return {
@@ -93,11 +95,15 @@ export class TransformerJSInferenceEngine extends AbstractLLMInferenceEngine {
             };
         });
 
-        const prompt:string = pipe.tokenizer.apply_chat_template(messages, {
+        const prompt:string = this.engine.tokenizer.apply_chat_template(messages, {
             tokenize: false, add_generation_prompt: true,
         }) as string;
 
-        const result = await pipe(prompt);
+        const result = await this.engine(prompt, { 
+            add_special_tokens: true, 
+            max_new_tokens: 512, 
+            repetition_penalty: 1.2
+        });
 
         console.log(result);
 

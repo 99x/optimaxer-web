@@ -1,3 +1,8 @@
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
+
 import { pipeline, Tensor, env } from '@xenova/transformers';
 import { AbstractEmbedderEngine } from './AbstractEmbedderEngine';
 import { Document } from '../types/Document';
@@ -34,11 +39,24 @@ export class OnBrowserEmbeddingEngine extends AbstractEmbedderEngine{
         this.embedderModel = model;
     }
 
-    async embedTexts(texts: string[]): Promise<number[]> {
+    async embedTexts(texts: string[]): Promise<number[][]> {
         const extractor = await pipeline('feature-extraction', this.getModel());
 
-        const output:Tensor = await extractor(texts, { pooling: 'mean', normalize: true });
-        return output.tolist();
+        const batchSize = 50;
+        const vectorizedTexts: number[][] = [];
+
+        for (let i = 0; i < texts.length; i += batchSize) {
+            console.log(`Vectorizing batch ${i} to ${i + batchSize}...`);
+
+            const batch = texts.slice(i, i + batchSize);
+            const output: Tensor = await extractor(batch, { pooling: 'mean', normalize: true });
+
+            output.tolist().forEach((vector: number[]) => {
+            vectorizedTexts.push(vector);
+            });
+        }
+
+        return vectorizedTexts;
     }
 
     async embedDocuments(documents: Document[]): Promise<VectorDocument[]> {
@@ -52,18 +70,23 @@ export class OnBrowserEmbeddingEngine extends AbstractEmbedderEngine{
             }
         });
 
-        const output:Tensor = await extractor(processedDocuments, { pooling: 'mean', normalize: true });
+        const batchSize = 50;
+        const vectorDocuments: VectorDocument[] = [];
         
-        const vectorDocuments:VectorDocument[] = [];
+        for (let i = 0; i < processedDocuments.length; i += batchSize) {
+            console.log(`Vectorizing batch ${i} to ${i + batchSize}...`);
 
+            const batch = processedDocuments.slice(i, i + batchSize);
+            const output: Tensor = await extractor(batch, { pooling: 'mean', normalize: true });
 
-        documents.forEach((doc:Document, index:number) => {
+            batch.forEach((doc: string, index: number) => {
             vectorDocuments.push(new VectorDocument(
-                doc.content,
+                doc,
                 output.tolist()[index],
-                doc.metadata
+                documents[i + index].metadata
             ));
-        });
+            });
+        }
 
         return vectorDocuments;
     }

@@ -1,4 +1,7 @@
-
+/**
+ * Author: Srilal S. Siriwardhane
+ * Email: SrilalS@99x.io
+**/
 
 import { Document } from '../../src/types/Document';
 import { VectorDocument } from '../../src/types/VectorDocument';

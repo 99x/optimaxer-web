@@ -20,7 +20,7 @@ Read more about the [features](./docs/features.md) and [architecture](./docs/arc
 
 ## Creating a simple application 
 
-(./packages/@optimaxer/web-cli/docs/getting%20started.md)
+Read more about the [create sample application](./packages/@optimaxer/web-cli/docs/getting%20started.md)
 
 
 ## Getting Started
